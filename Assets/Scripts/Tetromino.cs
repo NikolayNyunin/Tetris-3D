@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Tetromino : MonoBehaviour
 {
+    public Vector3 RotationPoint;
+
     private Spawning spawner;
     private Board board;
 
@@ -31,7 +33,7 @@ public class Tetromino : MonoBehaviour
         if (Time.time - previousFallTime >= time)
         {
             transform.SetPositionAndRotation(transform.position + Vector3.down, transform.rotation);
-
+        
             if (ValidMove())
             {
                 previousFallTime = Time.time;
@@ -47,6 +49,9 @@ public class Tetromino : MonoBehaviour
 
     private void ProcessInput()
     {
+        if (Input.GetKeyDown("w") || Input.GetKeyDown("up"))
+            Rotate();
+
         if (Input.GetKeyDown("s") || Input.GetKeyDown("down"))
             fallingFast = !fallingFast;
 
@@ -101,5 +106,14 @@ public class Tetromino : MonoBehaviour
         }
 
         return true;
+    }
+
+    private void Rotate()
+    {
+        Vector3 absoluteRotationPoint = transform.TransformPoint(RotationPoint);
+        transform.RotateAround(absoluteRotationPoint, new Vector3 (0, 0, 1), -90);
+
+        if (!ValidMove())
+            transform.RotateAround(absoluteRotationPoint, new Vector3(0, 0, 1), 90);
     }
 }
