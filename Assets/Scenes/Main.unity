@@ -230,7 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FallTime: 1
   FasterFallTime: 0.1
-  MoveTime: 0.2
+  MoveTime: 0.15
   StartX: 1
   StartY: 1
   Width: 10
