@@ -4,14 +4,17 @@ public class Spawning : MonoBehaviour
 {
     public GameObject[] Tetrominoes;
 
+    private Board board;
+
     void Start()
     {
-        NewTetromino();
+        board = FindObjectOfType<Board>();
+        board.AddTetromino(NewTetromino());
     }
 
-    public void NewTetromino()
+    public GameObject NewTetromino()
     {
         GameObject tetromino = Tetrominoes[Random.Range(0, Tetrominoes.Length)];
-        Instantiate(tetromino, transform.position, tetromino.transform.rotation);
+        return Instantiate(tetromino, transform.position, tetromino.transform.rotation);
     }
 }

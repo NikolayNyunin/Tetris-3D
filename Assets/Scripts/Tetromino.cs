@@ -44,9 +44,11 @@ public class Tetromino : MonoBehaviour
                 movable = false;
 
                 foreach (Transform child in transform)
-                    board.OccupySpot(Convert.ToInt32(child.transform.position.x), Convert.ToInt32(child.transform.position.y));
+                    board.OccupySpot(Convert.ToInt32(child.position.x), Convert.ToInt32(child.position.y));
 
-                spawner.NewTetromino();
+                board.CheckRows();
+                GameObject newTetromino = spawner.NewTetromino();
+                board.AddTetromino(newTetromino);
             }
         }
     }
@@ -104,7 +106,7 @@ public class Tetromino : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
-            int x = Convert.ToInt32(child.transform.position.x), y = Convert.ToInt32(child.transform.position.y);
+            int x = Convert.ToInt32(child.position.x), y = Convert.ToInt32(child.position.y);
             if (!board.IsOnBoard(x, y))
                 return false;
             if (board.IsOccupied(x, y))
