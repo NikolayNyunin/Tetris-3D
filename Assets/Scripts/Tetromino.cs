@@ -10,7 +10,6 @@ public class Tetromino : MonoBehaviour
 
     private double previousFallTime, previousMoveTime;
     private bool fallingFast = false;
-    private bool movable = true;
 
     void Start()
     {
@@ -23,9 +22,6 @@ public class Tetromino : MonoBehaviour
 
     void Update()
     {
-        if (!movable)
-            return;
-
         ProcessInput();
 
         double time = fallingFast ? board.FasterFallTime : board.FallTime;
@@ -41,14 +37,13 @@ public class Tetromino : MonoBehaviour
             else
             {
                 transform.SetPositionAndRotation(transform.position + Vector3.up, transform.rotation);
-                movable = false;
 
                 foreach (Transform child in transform)
                     board.OccupySpot(Convert.ToInt32(child.position.x), Convert.ToInt32(child.position.y));
 
                 board.CheckRows();
-                GameObject newTetromino = spawner.NewTetromino();
-                board.AddTetromino(newTetromino);
+                spawner.NewTetromino();
+                enabled = false;
             }
         }
     }

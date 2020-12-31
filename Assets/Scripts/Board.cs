@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class Board : MonoBehaviour
 
     public int StartX = 1, StartY = 1;
     public int Width = 10, Height = 20;
+
+    public Text score;
+    public int[] Scores = {100, 300, 700, 1500};
 
     private bool[,] board;
     private List<GameObject> tetrominoes = new List<GameObject>();
@@ -77,6 +81,8 @@ public class Board : MonoBehaviour
 
     public void DeleteRows(List<int> rowsToDelete)
     {
+        score.text = (Convert.ToInt32(score.text) + Scores[rowsToDelete.Count - 1]).ToString();
+
         foreach (int row in rowsToDelete)
         {
             int y = StartY + row;
@@ -88,14 +94,23 @@ public class Board : MonoBehaviour
             }
         }
 
+        int j = 0;
+        while (j < tetrominoes.Count)
+        {
+            if (tetrominoes[j].transform.childCount == 0)
+            {
+                Destroy(tetrominoes[j]);
+                tetrominoes.RemoveAt(j);
+            }
+            else
+                j++;
+        }
+
         for (int i = 0; i < rowsToDelete.Count; i++)
         {
             int y = StartY + rowsToDelete[i] - i;
             foreach (GameObject tetromino in tetrominoes)
             {
-                if (tetromino.transform.childCount == 0)
-                    Destroy(tetromino);
-
                 foreach (Transform child in tetromino.transform)
                 {
                     if (Convert.ToInt32(child.position.y) > y)
@@ -107,5 +122,10 @@ public class Board : MonoBehaviour
         }
 
         UpdateBoard();
+    }
+
+    public void GameOver()
+    {
+        Debug.Log("GAME OVER!");
     }
 }
