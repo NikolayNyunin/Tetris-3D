@@ -8,8 +8,9 @@ public class Tetromino : MonoBehaviour
     private Spawning spawner;
     private Board board;
 
-    private double previousFallTime, previousMoveTime;
-    private bool fallingFast = false;
+    private double previousFallTime, previousMoveTime, lastFallTime;
+    private bool fallingFast;
+    private bool validUnder = true;
 
     void Start()
     {
@@ -18,11 +19,27 @@ public class Tetromino : MonoBehaviour
 
         previousFallTime = Time.time;
         previousMoveTime = Time.time;
+
+        if (!CheckValidUnder())
+        {
+            validUnder = false;
+            lastFallTime = Time.time;
+        }
     }
 
     void Update()
     {
         ProcessInput();
+
+        if (Time.time - lastFallTime >= board.LastFallTime && !validUnder)
+        {
+            foreach (Transform child in transform)
+                board.OccupySpot(Convert.ToInt32(child.position.x), Convert.ToInt32(child.position.y));
+
+            board.CheckRows();
+            spawner.NewTetromino();
+            enabled = false;
+        }
 
         double time = fallingFast ? board.FasterFallTime : board.FallTime;
 
@@ -33,6 +50,12 @@ public class Tetromino : MonoBehaviour
             if (ValidMove())
             {
                 previousFallTime = Time.time;
+
+                if (!CheckValidUnder())
+                {
+                    validUnder = false;
+                    lastFallTime = Time.time;
+                }
             }
             else
             {
@@ -62,7 +85,11 @@ public class Tetromino : MonoBehaviour
             if (!ValidMove())
                 transform.SetPositionAndRotation(transform.position + Vector3.right, transform.rotation);
             else
+            {
                 previousMoveTime = Time.time;
+
+                ValidUnder();
+            }
         }
         else if (Input.GetKey("a") || Input.GetKey("left"))
         {
@@ -72,7 +99,11 @@ public class Tetromino : MonoBehaviour
                 if (!ValidMove())
                     transform.SetPositionAndRotation(transform.position + Vector3.right, transform.rotation);
                 else
+                {
                     previousMoveTime = Time.time;
+                    
+                    ValidUnder();
+                }
             }
         }
 
@@ -82,7 +113,11 @@ public class Tetromino : MonoBehaviour
             if (!ValidMove())
                 transform.SetPositionAndRotation(transform.position + Vector3.left, transform.rotation);
             else
+            {
                 previousMoveTime = Time.time;
+                
+                ValidUnder();
+            }
         }
         else if (Input.GetKey("d") || Input.GetKey("right"))
         {
@@ -92,7 +127,11 @@ public class Tetromino : MonoBehaviour
                 if (!ValidMove())
                     transform.SetPositionAndRotation(transform.position + Vector3.left, transform.rotation);
                 else
+                {
                     previousMoveTime = Time.time;
+                    
+                    ValidUnder();
+                }
             }
         }
     }
@@ -109,6 +148,30 @@ public class Tetromino : MonoBehaviour
         }
 
         return true;
+    }
+
+    private bool CheckValidUnder()
+    {
+        transform.SetPositionAndRotation(transform.position + Vector3.down, transform.rotation);
+        bool valid = ValidMove();
+        transform.SetPositionAndRotation(transform.position + Vector3.up, transform.rotation);
+        return valid;
+    }
+
+    private void ValidUnder()
+    {
+        if (!CheckValidUnder())
+        {
+            if (validUnder)
+            {
+                validUnder = false;
+                lastFallTime = Time.time;
+            }
+        }
+        else
+        {
+            validUnder = true;
+        }
     }
 
     private void Rotate()

@@ -8,6 +8,7 @@ public class Board : MonoBehaviour
     public float FallTime = 1f;
     public float FasterFallTime = 0.1f;
     public float MoveTime = 0.2f;
+    public float LastFallTime = 0.4f;
 
     public int StartX = 1, StartY = 1;
     public int Width = 10, Height = 20;
