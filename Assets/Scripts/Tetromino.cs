@@ -181,5 +181,7 @@ public class Tetromino : MonoBehaviour
 
         if (!ValidMove())
             transform.RotateAround(absoluteRotationPoint, new Vector3(0, 0, 1), 90);
+        else if (CheckValidUnder())
+            validUnder = true;
     }
 }

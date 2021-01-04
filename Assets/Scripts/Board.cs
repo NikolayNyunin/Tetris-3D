@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
+    public GameObject Pause;
+    
     public float FallTime = 1f;
     public float FasterFallTime = 0.1f;
     public float MoveTime = 0.2f;
@@ -13,15 +16,29 @@ public class Board : MonoBehaviour
     public int StartX = 1, StartY = 1;
     public int Width = 10, Height = 20;
 
-    public Text score;
+    public Text Score;
     public int[] Scores = {100, 300, 700, 1500};
 
     private bool[,] board;
     private List<GameObject> tetrominoes = new List<GameObject>();
 
+    private Save save;
+
     void Start()
     {
         board = new bool[Width, Height];
+
+        save = FindObjectOfType<Save>();
+        save.SaveScore(0);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown("escape"))
+        {
+            Time.timeScale = 0;
+            Pause.SetActive(true);
+        }
     }
 
     public void AddTetromino(GameObject tetromino)
@@ -82,7 +99,8 @@ public class Board : MonoBehaviour
 
     public void DeleteRows(List<int> rowsToDelete)
     {
-        score.text = (Convert.ToInt32(score.text) + Scores[rowsToDelete.Count - 1]).ToString();
+        Score.text = "Score: " + (Convert.ToInt32(Score.text.Split(' ')[1]) + Scores[rowsToDelete.Count - 1]);
+        save.SaveScore(Convert.ToInt32(Score.text.Split(' ')[1]));
 
         foreach (int row in rowsToDelete)
         {
@@ -127,6 +145,6 @@ public class Board : MonoBehaviour
 
     public void GameOver()
     {
-        Debug.Log("GAME OVER!");
+        SceneManager.LoadScene("Game Over");
     }
 }
